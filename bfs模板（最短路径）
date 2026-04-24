@@ -3,29 +3,29 @@ using namespace std;
 
 const int N = 1005;
 int n, m;
-char maze[N][N];
-int dist[N][N];          // -1 表示未访问
+char maze[N][N];         // 用来存放地图的（.代表能走，*不能走）
+int dist[N][N];          //  距离数组，dist[i][j] 记录从起点到 (i,j) 的最短步数，-1 表示尚未访问
 int dx[4] = {1, -1, 0, 0};
 int dy[4] = {0, 0, 1, -1};
 
 int bfs(int sx, int sy, int ex, int ey) {
     memset(dist, -1, sizeof(dist));//memset可以快速初始化大块内存为零或者特定值，在这里，dist是要初始化的数组，-1是初始化值，sizeof是长度
-    queue<pair<int, int>> q;
+    queue<pair<int, int>> q;    //待访问的的格子坐标
     dist[sx][sy] = 0;
-    q.push({sx, sy});
+    q.push({sx, sy});    // 起点距离为 0，并加入队列
     
-    while (!q.empty()) {
+    while (!q.empty()) {    // 取出队首元素作为当前格子
         pair<int,int>cur = q.front(); q.pop();
-        int x =cur.first;
-        int y =cur.second;
+        int x =cur.first;//邻居行坐标
+        int y =cur.second;//邻居列坐标
         if (x == ex && y == ey) return dist[x][y];
-        for (int d = 0; d < 4; ++d) {
+        for (int d = 0; d < 4; ++d) {    // 计算邻居坐标
             int nx = x + dx[d], ny = y + dy[d];
             if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
             if (maze[nx][ny] == '#') continue;   // 障碍
-            if (dist[nx][ny] == -1) {
-                dist[nx][ny] = dist[x][y] + 1;
-                q.push({nx, ny});
+            if (dist[nx][ny] == -1) {//如果邻居仍未被访问过
+                dist[nx][ny] = dist[x][y] + 1;// 更新最短距离：从当前格子走一步到达邻居
+                q.push({nx, ny}); // 将邻居加入队列，以便后续从它继续向外扩展
             }
         }
     }
