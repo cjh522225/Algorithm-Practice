@@ -1,0 +1,33 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 1005;
+int n, m;
+char maze[N][N];
+int dist[N][N];          // -1 表示未访问
+int dx[4] = {1, -1, 0, 0};
+int dy[4] = {0, 0, 1, -1};
+
+int bfs(int sx, int sy, int ex, int ey) {
+    memset(dist, -1, sizeof(dist));//memset可以快速初始化大块内存为零或者特定值，在这里，dist是要初始化的数组，-1是初始化值，sizeof是长度
+    queue<pair<int, int>> q;
+    dist[sx][sy] = 0;
+    q.push({sx, sy});
+    
+    while (!q.empty()) {
+        pair<int,int>cur = q.front(); q.pop();
+        int x =cur.first;
+        int y =cur.second;
+        if (x == ex && y == ey) return dist[x][y];
+        for (int d = 0; d < 4; ++d) {
+            int nx = x + dx[d], ny = y + dy[d];
+            if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+            if (maze[nx][ny] == '#') continue;   // 障碍
+            if (dist[nx][ny] == -1) {
+                dist[nx][ny] = dist[x][y] + 1;
+                q.push({nx, ny});
+            }
+        }
+    }
+    return -1;   // 不可达
+}
