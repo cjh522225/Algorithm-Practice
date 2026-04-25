@@ -5,7 +5,7 @@ const int N = 1005;
 int n, m;
 char maze[N][N];         // 用来存放地图的（.代表能走，*不能走）
 int dist[N][N];          //  距离数组，dist[i][j] 记录从起点到 (i,j) 的最短步数，-1 表示尚未访问
-int dx[4] = {1, -1, 0, 0};
+int dx[4] = {1, -1, 0, 0};//下上右左
 int dy[4] = {0, 0, 1, -1};
 
 int bfs(int sx, int sy, int ex, int ey) {
