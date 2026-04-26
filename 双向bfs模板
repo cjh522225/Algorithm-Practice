@@ -1,6 +1,6 @@
 // 示例：求从 start 到 target 的最短步数（状态为 int）
 int bidirectionalBFS(int start, int target) {
-    if (start == target) return 0;
+    if (start == target) return 0;//开始即结束
     unordered_map<int, int> dist[2];  // 0:正向, 1:反向
     queue<int> q[2];
     dist[0][start] = 0; q[0].push(start);
