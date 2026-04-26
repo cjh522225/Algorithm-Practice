@@ -1,0 +1,22 @@
+// 示例：求从 start 到 target 的最短步数（状态为 int）
+int bidirectionalBFS(int start, int target) {
+    if (start == target) return 0;
+    unordered_map<int, int> dist[2];  // 0:正向, 1:反向
+    queue<int> q[2];
+    dist[0][start] = 0; q[0].push(start);
+    dist[1][target] = 0; q[1].push(target);
+    while (!q[0].empty() && !q[1].empty()) {
+        // 每次扩展节点数较少的那一端（平衡优化）
+        int cur = (q[0].size() < q[1].size()) ? 0 : 1;
+        int u = q[cur].front(); q[cur].pop();
+        int step = dist[cur][u];
+        for (int v : getNeighbors(u)) { // 需自定义邻居生成函数
+            if (dist[cur].count(v)) continue;
+            if (dist[1-cur].count(v))   // 相遇
+                return step + 1 + dist[1-cur][v];
+            dist[cur][v] = step + 1;
+            q[cur].push(v);
+        }
+    }
+    return -1; // 不可达
+}
