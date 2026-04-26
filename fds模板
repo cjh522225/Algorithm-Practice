@@ -1,0 +1,27 @@
+int bfs(int sx,int sy,int ex,int ey){
+	stack<pair<int,int>>q;//和bfs最大区别
+	dist[sx][sy]=0;//待访问的格子坐标
+	q.push({sx,sy});
+	vector<vector<bool>>vis(n,vector<bool>(m,false));//记录每个格子是否被访问过
+	vis[sx][sy]=0;
+	bool reachable =false;
+	while(!q.empty()){
+		pair<int,int>cur=q.top();
+		q.pop();
+		int x=cur.first;
+		int y=cur.second;
+		if(x==ex&&y==ey){
+			reachable=true;
+			break;
+		}
+		for(int i=0;i<4;i++){
+			int nx =x+dx[i];
+			int ny= y+dy[i];
+			if(nx>=0&&nx<n&&ny>=0&&ny<m&&!vis[nx][ny]&&g[nx][ny]=='.'){
+				vis[nx][ny]=true;
+				q.push({nx,ny});
+			}
+		}
+	}
+	cout<<(reachable?"YES":"NO")<<endl;
+}
