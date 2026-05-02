@@ -1,0 +1,53 @@
+#include<bits/stdc++.h>
+using namespace std;
+//题目：n个顶点，m条边的无向图，输入n，m表示无向图的点数和边数。接下来输入的俩数字表示这俩顶点有条无向边，升序输出所有相连的点
+const int N=1e5+5;//最大顶点数
+const int M=2e5+5;//最大边数（无向边*2）
+int head[N];//存储顶点u的第一条边
+int to[M];//存储这条边的目的地
+int nxt[M];//存储与第i条边有相同起点的上一条边的编号
+int ecnt;//边的编号
+void init(){
+	memset(head,-1,sizeof(head));
+	ecnt=0;
+}
+void add_edge(int u,int v){
+	to[ecnt]=v;//边的终点
+	nxt[ecnt]=head[u];//新边的 nxt 指向原来 head[u] 指向的第一条边
+	head[u]=ecnt; //更新 head[u] 为新边的编号
+	ecnt++;/边的编号+1（下条边）
+}
+int main(){
+	ios::sync_with_stdio(false);
+	cin.tie(nullptr);
+	cout.tie(nullptr);
+	int n,m;
+	cin>>n>>m;
+	init();
+	for(int i=0;i<m;i++){
+		int u,v;
+		cin>>u>>v;
+		add_edge(u,v);
+		add_edge(v,u);
+	}
+	for(int i=1;i<=n;i++){
+		vector<int>adj;//存放顶点i的所有邻接点
+		for(int e=head[i];e!=-1;e=nxt[e]){
+			adj.push_back(to[e]);
+		}
+		if(adj.empty()){
+			cout<<"None"<<endl;
+		}
+		else{
+			sort(adj.begin(),adj.end());//升序输出
+			for(size_t k =0;k<adj.size();k++){
+				if(k>0){
+					cout<<" ";
+				}
+					cout<<adj[k];
+			}
+		cout<<endl;
+		}
+	}
+	return 0;
+}
