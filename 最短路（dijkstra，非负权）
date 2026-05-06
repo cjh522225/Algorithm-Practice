@@ -14,18 +14,19 @@ struct DSU{//并查集
 	int find(int x){
 		return fa[x]==x?x:fa[x]=find(fa[x]);//查找根节点并且进行了路径压缩 
 	}
-	bool unite(int x,int y){//开始按秩合并 
+	bool unite(int x,int y){
 		x =find(x);
 		y =find(y);
 		if(x==y){
-			return false;
+			return false;//判断图是否成环（如果根相同）
 		}
-		if(rk[x]<rk[y]){
-			swap(x,y);
+		//开始按秩合并
+		if(rk[x]<rk[y]){//如果x的秩小于y的秩
+			swap(x,y);//将x，y的秩交换，使得x的秩>=y的秩
 		}
-		fa[y]=x;
-		if(rk[x]==rk[y]){
-			rk[x]++;
+		fa[y]=x;//将y的父节点设置为x
+		if(rk[x]==rk[y]){//如果x和y的秩相等
+			rk[x]++;//x的秩+1
 		}
 		return true;
 	}
@@ -47,7 +48,7 @@ int main(){
 	long long ans=0;//记录已经加上去的权重和 
 	int cnt=0;//记录已选入mst的边数 
 	for(auto&e:edges){
-		if(dsu.unite(e.u,e.v)){//如果按秩合并成功 
+		if(dsu.unite(e.u,e.v)){//如果不成环同时按秩合并成功 
 			ans+=e.w;//将边权加进总的权重和 
 			cnt++;//将边数+1 
 			if(cnt==n-1)//如果边数已经达到n-1就说明最小生成树构成了 
