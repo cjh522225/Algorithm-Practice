@@ -1,0 +1,40 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;//有几个对象
+    vector<vector<int>> g(n + 1);   // 邻接表
+    vector<int> indeg(n + 1, 0);    // 入度
+
+    // 读入并建图
+    for (int i = 1; i <= n; ++i) {
+        int x;
+        while (cin >> x, x != 0) {  // 读到 0 结束
+            g[i].push_back(x);      // i → x
+            indeg[x]++;             // x 的入度加 1
+        }
+    }
+
+    // 拓扑排序（Kahn算法）
+    queue<int> q;
+    for (int i = 1; i <= n; ++i) {
+        if (indeg[i] == 0) q.push(i);
+    }
+
+    vector<int> topo;
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        topo.push_back(u);
+        for (int v : g[u]) {
+            indeg[v]--;
+            if (indeg[v] == 0) q.push(v);
+        }
+    }
+
+    // 输出结果（题目保证有解，所以 topo 大小一定等于 n）
+    for (size_t i = 0; i < topo.size(); ++i) {
+        cout << topo[i] << " \n"[i == topo.size() - 1];
+    }
+    return 0;
+}
