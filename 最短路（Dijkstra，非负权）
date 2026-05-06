@@ -36,10 +36,10 @@ int main() {
         if (d != dis[u]) continue;
 
         // 遍历所有邻居
-        for (auto [v, w] : g[u]) {
-            if (dis[v] > dis[u] + w) {
-                dis[v] = dis[u] + w;
-                pq.push({dis[v], v});
+        for (auto [v, w] : g[u]) {//v是目标顶点，w是边的权重
+            if (dis[v] > dis[u] + w) {//如果到v顶点的距离（权重）大于通过u到v的距离（权重）
+                dis[v] = dis[u] + w;//更新距离
+                pq.push({dis[v], v});//将更新后的 (距离, 顶点) 压入小根堆
             }
         }
     }
