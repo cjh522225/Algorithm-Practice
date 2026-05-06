@@ -1,0 +1,65 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 5005;
+const int INF = 0x3f3f3f3f；
+int g[N][N];   // 邻接矩阵，存边权（不连通为 INF）
+int dis[N];    // 每个点到当前生成树的最短距离
+bool vis[N];   // 标记是否已加入树
+int n, m;
+
+int prim() {
+    memset(dis, 0x3f, sizeof(dis));
+    memset(vis, 0, sizeof(vis));
+    dis[1] = 0;          // 从节点 1 开始构建
+    int ans = 0;
+
+    for (int i = 1; i <= n; ++i) {
+        // 1. 选一个未加入树且距离最小的点
+        int u = -1, minv = INF;
+        for (int j = 1; j <= n; ++j) {
+            if (!vis[j] && dis[j] < minv) {
+                minv = dis[j];
+                u = j;
+            }
+        }
+        if (u == -1) return -1;   // 不连通
+
+        // 2. 加入树，累加答案
+        vis[u] = true;
+        ans += dis[u];
+
+        // 3. 用新加入的 u 更新其它点到树的最小距离
+        for (int v = 1; v <= n; ++v) {
+            if (!vis[v] && g[u][v] < dis[v]) {
+                dis[v] = g[u][v];
+            }
+        }
+    }
+    return ans;
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    cin >> n >> m;
+    // 初始化邻接矩阵为无穷大
+    memset(g, 0x3f, sizeof(g));
+    for (int i = 1; i <= n; ++i) g[i][i] = 0;
+
+    for (int i = 0; i < m; ++i) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        // 无向图，存两次，并保留最小边（处理重边）
+        if (w < g[u][v]) {
+            g[u][v] = g[v][u] = w;
+        }
+    }
+
+    int res = prim();
+    if (res == -1) cout << "orz\n";
+    else cout << res << '\n';
+
+    return 0;
+}
