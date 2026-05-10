@@ -1,0 +1,51 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const int MOD = 998244353;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int T;
+    cin >> T;
+    while (T--) {
+        int n, k;
+        string s;
+        cin >> n >> k >> s;
+
+        // tot[i] : 前 i 个字符的所有本质不同 k-松散子序列（包含空串）的个数
+        vector<int> tot(n + 1);
+        tot[0] = 1;          // 空串
+
+        // last[c] : 对于字符 c，已经用作前缀的最大结尾位置
+        // 初始 -1 表示没有任何前缀（包括空串）被使用过
+        vector<int> last(26, -1);
+
+        for (int i = 1; i <= n; ++i) {
+            int c = s[i - 1] - 'a';
+            int L = i - k - 1;   // 允许的前缀结尾位置必须 ≤ L
+            int add;
+
+            if (L >= 0) {
+                int base = tot[L];                     // 所有可用前缀的个数
+                int used = (last[c] >= 0 ? tot[last[c]] : 0); // 已经用过的前缀个数
+                add = (base - used) % MOD;
+                if (add < 0) add += MOD;
+                last[c] = L;                          // 更新已使用前缀的最大位置
+            } else {
+                // 只有空串可用
+                if (last[c] >= 0) add = 0;             // 空串已经被用过
+                else add = 1;                         // 首次使用空串，产生单字符
+                last[c] = 0;                          // 标记空串已被使用
+            }
+
+            tot[i] = (tot[i - 1] + add) % MOD;
+        }
+
+        int ans = (tot[n] - 1 + MOD) % MOD;   // 去掉空串
+        cout << ans << '\n';
+    }
+
+    return 0;
+}
