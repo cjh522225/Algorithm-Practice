@@ -1,123 +1,83 @@
-小红拥有一棵包含 
-n
-n 个节点的无根树，节点编号为 
-1
-∼
-n
-1∼n。小红和朋友两人（双方均采取最优策略）依次进行如下游戏：
-1.
- 
-1.
-​
- 在自己的回合中，玩家必须选择一个叶子节点并将其连同与之相连的边一起删除；
-2.
- 
-2.
-​
- 若被删除的节点编号恰好是给定的特殊节点 
-x
-x，则当前玩家立即获胜，游戏结束。
-已知本局游戏由小红先手。她想知道自己是否能够获胜。
+#include<bits/stdc++.h>
+using namespace std;
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+	cout.tie(nullptr);
+    int T;
+    cin >> T;
+    while (T--) {
+        int n, a, b;
+        cin >> n >> a >> b;//a是过题数，b是罚时(自己） 
+        int s;
+        cin >> s;
+        vector<int> pre_err(n, 0);          // 封榜前该题的错误提交次数
+        vector<bool> passed(n, false);      // 该题是否已在封榜前通过
+        vector<int> pass_pen(n, 0);         // 若通过，该题的罚时
+        vector<int> first_pd(n, -1);        // 封榜后该题的第一次提交时间
+        for (int i = 0; i < s; ++i) {
+            int t;
+            string p, v;
+            cin >> t >> p >> v;
+            int idx = p[0] - 'A';
+            if (t < 240) {           
+                if (v == "ac") {
+                    if (!passed[idx]) {
+                        passed[idx] = true;
+                        pass_pen[idx] = t + 20 * pre_err[idx];
+                    }
+                } else if (v == "rj") {
+                    if (!passed[idx]) {
+                        pre_err[idx]++;
+                    }
+                }
+            } else {                       
+                if (!passed[idx] && first_pd[idx] == -1) {
+                    first_pd[idx] = t;
+                }
+            }
+        }
 
-【名词解释】
-叶子节点：度数（与之相连的边数）为 
-1
-1 的节点。
-树：一张无向连通且无环的图。
-输入描述：
-第一行输入一个整数 
-t
-(
-1
-≦
-t
-≦
-30
-)
-t(1≦t≦30)——测试数据组数。
-对于每组数据：
-•
- 
-•
-​
- 第一行输入两个整数 
-n
-,
-x
-(
-1
-≦
-n
-≦
-1
-0
-4
-,
- 
-1
-≦
-x
-≦
-n
-)
-n,x(1≦n≦10 
-4
- , 1≦x≦n)。
-•
- 
-•
-​
- 随后 
-n
-−
-1
-n−1 行，每行输入两个整数 
-u
-,
-v
-(
-1
-≦
-u
-,
-v
-≦
-n
-)
-u,v(1≦u,v≦n)，表示树上存在一条连接 
-u
-u 与 
-v
-v 的无向边。
-输出描述：
-对于每组数据，在一行上输出一个字符串：
-•
- 
-•
-​
- 若小红先手必胜，输出win；
-•
- 
-•
-​
- 否则输出lose。
-示例1
-输入：
-2
-5 3
-1 2
-1 3
-2 4
-2 5
-5 2
-1 2
-1 3
-2 4
-2 5
-复制
-输出：
-win
-lose
-复制
-说明：
-第一组，3 是叶子结点，可以直接删除
+        int pre_ac = 0;
+        int pre_pen = 0;//封榜前罚时 
+        for (int i = 0; i < n; ++i) {
+            if (passed[i]) {
+                pre_ac++;
+                pre_pen += pass_pen[i];
+            }
+        }
+        vector<int> cand;//可能的罚时 
+        for (int i = 0; i < n; ++i) {
+            if (!passed[i] && first_pd[i] != -1) {
+                int pen = first_pd[i] + 20 * pre_err[i];
+                cand.push_back(pen);
+            }
+        }
+        sort(cand.begin(), cand.end());
+        int m = cand.size();
+        vector<int> prefix(m + 1, 0);
+        for (int i = 0; i < m; ++i) {
+            prefix[i + 1] = prefix[i] + cand[i];
+        }
+        if (pre_ac > a) {
+            cout << 0 << '\n';
+            continue;
+        }
+        int need = a - pre_ac + 1;          // 使通过题数严格大于 a 所需的最小封榜后过题数
+        int ans = -1;
+        // 尝试通过题数等于 a 的情况（x 从 0 到 need-1）
+        for (int x =0; x<= m && x < need; ++x) {
+            if (pre_ac + x == a && pre_pen + prefix[x] < b) {
+                ans = x;
+                break;
+            }
+        }
+        // 若没有找到，尝试通过题数大于 a
+        if (ans == -1 && need <= m) {
+            ans = need;
+        }
+
+        cout << ans << '\n';
+    }
+    return 0;
+}
