@@ -1,83 +1,304 @@
-#include<bits/stdc++.h>
-using namespace std;
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-	cout.tie(nullptr);
-    int T;
-    cin >> T;
-    while (T--) {
-        int n, a, b;
-        cin >> n >> a >> b;//a是过题数，b是罚时(自己） 
-        int s;
-        cin >> s;
-        vector<int> pre_err(n, 0);          // 封榜前该题的错误提交次数
-        vector<bool> passed(n, false);      // 该题是否已在封榜前通过
-        vector<int> pass_pen(n, 0);         // 若通过，该题的罚时
-        vector<int> first_pd(n, -1);        // 封榜后该题的第一次提交时间
-        for (int i = 0; i < s; ++i) {
-            int t;
-            string p, v;
-            cin >> t >> p >> v;
-            int idx = p[0] - 'A';
-            if (t < 240) {           
-                if (v == "ac") {
-                    if (!passed[idx]) {
-                        passed[idx] = true;
-                        pass_pen[idx] = t + 20 * pre_err[idx];
-                    }
-                } else if (v == "rj") {
-                    if (!passed[idx]) {
-                        pre_err[idx]++;
-                    }
-                }
-            } else {                       
-                if (!passed[idx] && first_pd[idx] == -1) {
-                    first_pd[idx] = t;
-                }
-            }
-        }
+给定一个长度为 
+n
+n 的升序数组 
+A
+A，第 
+i
+i 项的值为 
+A
+i
+A 
+i
+​
+ ，其中 
+A
+1
+=
+1
+A 
+1
+​
+ =1。
 
-        int pre_ac = 0;
-        int pre_pen = 0;//封榜前罚时 
-        for (int i = 0; i < n; ++i) {
-            if (passed[i]) {
-                pre_ac++;
-                pre_pen += pass_pen[i];
-            }
-        }
-        vector<int> cand;//可能的罚时 
-        for (int i = 0; i < n; ++i) {
-            if (!passed[i] && first_pd[i] != -1) {
-                int pen = first_pd[i] + 20 * pre_err[i];
-                cand.push_back(pen);
-            }
-        }
-        sort(cand.begin(), cand.end());
-        int m = cand.size();
-        vector<int> prefix(m + 1, 0);
-        for (int i = 0; i < m; ++i) {
-            prefix[i + 1] = prefix[i] + cand[i];
-        }
-        if (pre_ac > a) {
-            cout << 0 << '\n';
-            continue;
-        }
-        int need = a - pre_ac + 1;          // 使通过题数严格大于 a 所需的最小封榜后过题数
-        int ans = -1;
-        // 尝试通过题数等于 a 的情况（x 从 0 到 need-1）
-        for (int x =0; x<= m && x < need; ++x) {
-            if (pre_ac + x == a && pre_pen + prefix[x] < b) {
-                ans = x;
-                break;
-            }
-        }
-        // 若没有找到，尝试通过题数大于 a
-        if (ans == -1 && need <= m) {
-            ans = need;
-        }
+用这个数组构建一个货币系统，对于任意正整数 
+x
+x，定义换钱张数函数为 
+f
+(
+x
+,
+n
+)
+f(x,n)，其中 
+n
+n 为数组长度。这个函数表示使用这一套货币系统支付 
+x
+x 元时，如果要满足尽量先拿大面额纸币再拿小面额纸币的原则，需要拿出多少张纸币。对于任意正整数 
+x
+x 和一个正整数 
+y
+∈
+[
+1
+,
+n
+]
+y∈[1,n]，
+f
+(
+x
+,
+y
+)
+f(x,y) 满足：
 
-        cout << ans << '\n';
-    }
-    return 0;
-}
+f
+(
+x
+,
+y
+)
+=
+{
+⌊
+x
+A
+y
+⌋
++
+f
+(
+x
+ 
+mod
+ 
+A
+y
+,
+y
+−
+1
+)
+y
+>
+1
+x
+y
+=
+1
+f(x,y)={ 
+⌊ 
+A 
+y
+​
+ 
+x
+​
+ ⌋+f(xmodA 
+y
+​
+ ,y−1)
+x
+​
+  
+y>1
+y=1
+​
+ 
+
+你需要处理 
+q
+q 组询问，每一组询问会给出一个整数 
+m
+m，请回答有多少个正整数 
+x
+x 满足 
+f
+(
+x
+,
+n
+)
+=
+m
+f(x,n)=m。
+
+输入格式Input
+输入第一行有两个正整数 
+n
+n 和 
+q
+q（
+1
+≤
+n
+≤
+10
+5
+,
+1
+≤
+q
+≤
+10
+6
+1≤n≤10 
+5
+ ,1≤q≤10 
+6
+ ），表示数组 
+A
+A 的长度和询问次数。
+
+第二行有 
+n
+n 个正整数 
+A
+1
+,
+A
+2
+,
+…
+,
+A
+n
+A 
+1
+​
+ ,A 
+2
+​
+ ,…,A 
+n
+​
+ （
+1
+=
+A
+1
+<
+A
+2
+<
+…
+<
+A
+n
+≤
+10
+6
+1=A 
+1
+​
+ <A 
+2
+​
+ <…<A 
+n
+​
+ ≤10 
+6
+ ），表示数组 
+A
+A。
+
+第三行有 
+q
+q 个整数 
+m
+1
+,
+m
+2
+,
+…
+,
+m
+q
+m 
+1
+​
+ ,m 
+2
+​
+ ,…,m 
+q
+​
+ （
+1
+≤
+m
+i
+≤
+10
+9
+1≤m 
+i
+​
+ ≤10 
+9
+ ），其中 
+m
+i
+m 
+i
+​
+  表示第 
+i
+i 次询问的整数。
+
+输出格式Output
+输出一行 
+q
+q 个用空格隔开的整数，第 
+i
+i 个整数表示第 
+i
+i 次询问的答案。
+
+样例Sample
+输入
+Input
+#0
+6 2
+1 5 10 20 50 100
+1 2
+输出
+Output
+#0
+6 18
+提示Hint
+对于样例，给出的货币系统中纸币面额有 
+1
+1 元、
+5
+5 元、
+10
+10 元、
+20
+20 元、
+50
+50 元和 
+100
+100 元六种。按照规则，当你要支付 
+6
+6 元时只能拿出两张纸币，即一张 
+1
+1 元和一张 
+5
+5 元，也就是 
+f
+(
+6
+,
+6
+)
+=
+2
+f(6,6)=2。虽然支付 
+6
+6 元也可以使用六张 
+1
+1 元，但是这种方案并不满足尽量拿大面额纸币的原则，也不满足本题函数的定义。
+
